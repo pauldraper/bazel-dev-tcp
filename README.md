@@ -1,6 +1,6 @@
 # bazel-dev-tcp
 
-An additional to ibazel that helps developing TCP services.
+An addition to ibazel that helps developing TCP services.
 
 ## Example
 
