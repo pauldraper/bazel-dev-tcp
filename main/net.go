@@ -21,7 +21,7 @@ func HandleListener(ls *net.TCPListener, ch chan *net.TCPConn) {
 
 func HandleConnection(conn *net.TCPConn, targetAddr string) {
 	defer conn.Close()
-	
+
 	var err error
 	var targetTcpAddr *net.TCPAddr
 	var targetConn *net.TCPConn
