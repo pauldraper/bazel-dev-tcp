@@ -1,0 +1,3 @@
+#!/bin/sh -e
+cd "$(dirname $0)"
+IBAZEL_PROFILE_FILE=$(pwd)/profile.json exec ibazel --profile_dev=profile.json mrun --define=DEV=true :echo :echo_dev
