@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -58,41 +59,41 @@ func run() int {
 
 	buildStatus := BuildStatusBuilding
 
+	/*
 	msgs := make(chan struct{})
 	go StdinMessage(msgs)
+	*/
 
 	conns := make(chan *net.TCPConn)
 	go HandleListener(ls, conns)
-
 	for {
-		select {
-		case <-msgs:
-			for {
-				buildStatus, err = UpdateBuildStatus(eventsReader, buildStatus)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					return 1
-				}
-
-				if buildStatus != BuildStatusBuilding {
-					break
-				}
-				<-msgs
-			}
-		case conn := <-conns:
-			buildStatus, err = UpdateBuildStatus(eventsReader, buildStatus)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				return 1
-			}
-
-			if buildStatus == BuildStatusFailed {
-				conn.Close()
-			} else {
-				go HandleConnection(conn, targetAddr)
-			}
+		conn := <-conns
+		buildStatus = ensureNotBuilding(buildStatus, eventsReader)
+		if buildStatus == BuildStatusFailed {
+			conn.Close()
+		} else {
+			go HandleConnection(conn, targetAddr)
 		}
 	}
 
 	return 0
+}
+
+func ensureNotBuilding(buildStatus BuildStatus, reader *bufio.Reader) BuildStatus {
+	var err error
+	for {
+		buildStatus, err = UpdateBuildStatus(reader, buildStatus)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+
+		if buildStatus != BuildStatusBuilding {
+			break
+		}
+
+		time.Sleep(50 * time.Millisecond)
+	}
+
+	return buildStatus
 }

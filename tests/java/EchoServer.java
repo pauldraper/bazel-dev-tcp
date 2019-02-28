@@ -5,6 +5,7 @@ class EchoServer {
     public static void main(String[] args) throws IOException {
         int port = Integer.parseInt(System.getProperty("echo-server.port"));
         ServerSocket server = new ServerSocket(port);
+        server.setReuseAddress(true);
         System.out.println("Listening on " + port);
         while (true) {
             Socket client = server.accept();

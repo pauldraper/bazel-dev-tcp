@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 )
 
 type BuildStatus int
@@ -57,9 +56,10 @@ func UpdateBuildStatus(reader *bufio.Reader, status BuildStatus) (BuildStatus, e
 	return status, nil
 }
 
+/*
 func StdinMessage(ch chan struct{}) {
+	reader := bufio.NewReader(os.Stdin)
 	for {
-		reader := bufio.NewReader(os.Stdin)
 		_, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
@@ -68,3 +68,4 @@ func StdinMessage(ch chan struct{}) {
 		ch <- struct{}{}
 	}
 }
+*/
